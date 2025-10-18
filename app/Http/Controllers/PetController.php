@@ -89,6 +89,9 @@ class PetController extends Controller
             abort(403);
         }
 
+        // Load pet records with the pet
+        $pet->load('petRecords');
+
         return Inertia::render('pets/show', [
             'pet' => $pet,
         ]);

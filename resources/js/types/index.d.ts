@@ -41,3 +41,30 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface Pet {
+    id: number;
+    user_id: number;
+    name: string;
+    species: string;
+    breed: string;
+    gender: string;
+    age: string;
+    weight: string;
+    color: string;
+    notes?: string;
+    avatar?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PetRecord {
+    id: number;
+    pet_id: number;
+    visit_date: string;
+    type_of_visit: string;
+    description: string;
+    vet_name: string;
+    created_at: string;
+    updated_at: string;
+}

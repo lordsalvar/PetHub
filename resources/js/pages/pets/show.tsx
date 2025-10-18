@@ -1,9 +1,10 @@
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type PetRecord } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { create, index, show as showRecord } from '@/routes/pet-records';
 import { 
     ArrowLeft, 
     Edit, 
@@ -12,7 +13,10 @@ import {
     Weight,
     Palette,
     FileText,
-    User
+    User,
+    Stethoscope,
+    Plus,
+    Eye
 } from 'lucide-react';
 
 interface Pet {
@@ -25,8 +29,10 @@ interface Pet {
     weight: string;
     color: string;
     notes?: string;
+    avatar?: string;
     created_at: string;
     updated_at: string;
+    pet_records?: PetRecord[];
 }
 
 interface ShowPetProps {
@@ -187,6 +193,83 @@ export default function ShowPet({ pet }: ShowPetProps) {
                         </Card>
                     </div>
                 </div>
+
+                {/* Pet Records Section */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="flex items-center gap-2">
+                                <Stethoscope className="h-5 w-5" />
+                                Veterinary Records
+                            </CardTitle>
+                            <div className="flex gap-2">
+                                <Button asChild>
+                                    <Link href={create({ pet: pet.id }).url}>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add Record
+                                    </Link>
+                                </Button>
+                                <Button variant="outline" asChild>
+                                    <Link href={index({ pet: pet.id }).url}>
+                                        View All Records
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {pet.pet_records && pet.pet_records.length > 0 ? (
+                            <div className="space-y-4">
+                                {pet.pet_records.slice(0, 3).map((record) => (
+                                    <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                        <div className="flex items-center gap-4">
+                                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                                            <div>
+                                                <p className="font-medium">
+                                                    {new Date(record.visit_date).toLocaleDateString()}
+                                                </p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Dr. {record.vet_name}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="outline">{record.type_of_visit}</Badge>
+                                            <Button variant="outline" size="sm" asChild>
+                                                <Link href={showRecord({ pet: pet.id, pet_record: record.id }).url}>
+                                                    <Eye className="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                                {pet.pet_records.length > 3 && (
+                                    <div className="text-center pt-2">
+                                        <Button variant="outline" asChild>
+                                            <Link href={index({ pet: pet.id }).url}>
+                                                View {pet.pet_records.length - 3} more records
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8">
+                                <Stethoscope className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-lg font-semibold mb-2">No Records Yet</h3>
+                                <p className="text-muted-foreground mb-4">
+                                    Start tracking {pet.name}'s veterinary visits and health records.
+                                </p>
+                                <Button asChild>
+                                    <Link href={create({ pet: pet.id }).url}>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add First Record
+                                    </Link>
+                                </Button>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );
