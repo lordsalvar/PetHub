@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -28,6 +29,7 @@ class FortifyServiceProvider extends ServiceProvider
     {
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->configureRedirects();
     }
 
     /**
@@ -62,6 +64,26 @@ class FortifyServiceProvider extends ServiceProvider
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
+        });
+    }
+
+    /**
+     * Configure redirects based on user role.
+     */
+    private function configureRedirects(): void
+    {
+        Fortify::redirects('login', function (Request $request) {
+            $user = $request->user();
+            
+            if ($user && $user->role === UserRole::ADMIN) {
+                return route('dashboard');
+            }
+            
+            if ($user && $user->role === UserRole::USER) {
+                return route('user');
+            }
+            
+            return route('dashboard');
         });
     }
 }

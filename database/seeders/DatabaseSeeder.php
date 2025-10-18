@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Enums\UserRole;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,11 +17,22 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::firstOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => 'admin@local.dev'],
             [
-                'name' => 'Test User',
+                'name' => 'Admin',
                 'password' => 'password',
                 'email_verified_at' => now(),
+                'role' => UserRole::ADMIN,
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'user@local.dev'],
+            [
+                'name' => 'User',
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'role' => UserRole::USER,
             ]
         );
     }
